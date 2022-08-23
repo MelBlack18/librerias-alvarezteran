@@ -26,6 +26,9 @@ let idResultado
 //Variable para almacenar el array del Storage
 let resultadoStorage
 
+//Constante para manejar la libreria Luxon para imprimir la fecha y hora
+const DateTime = luxon.DateTime
+
 //Evalúo antes de empezar si ya hay algo en el storage o no y almaceno en las variables los datos previos si los hubiera 
 if (localStorage.getItem("resultados") == null) {
     
@@ -43,7 +46,7 @@ if (localStorage.getItem("resultados") == null) {
         let resultadoFinal = document.getElementById("historial")
 
         //Le agrego el texto al p
-        result.innerText = `${resultadoStorage[i].cantInicial} ${resultadoStorage[i].unInicial} equivalen a ${resultadoStorage[i].resultOp} ${resultadoStorage[i].unDestino}`
+        result.innerText = `${resultadoStorage[i].fechayhora} - ${resultadoStorage[i].cantInicial} ${resultadoStorage[i].unInicial} equivalen a ${resultadoStorage[i].resultOp} ${resultadoStorage[i].unDestino}`
         
         //Imprimo el p en el div
         resultadoFinal = resultadoFinal.append(result)
@@ -51,12 +54,13 @@ if (localStorage.getItem("resultados") == null) {
 }
 
 //Creo un constructor para el objeto que se envía al LocalStorage
-function storeResultado(id,cantinicial,uninicial,resultop,undestino) {
+function storeResultado(id,cantinicial,uninicial,resultop,undestino,horaFecha) {
     this.id = id,
     this.cantInicial = cantinicial,
     this.unInicial = uninicial,
     this.resultOp = resultop,
-    this.unDestino = undestino 
+    this.unDestino = undestino,
+    this.fechayhora = horaFecha 
 }
 
 //Objeto que contiene todas las operaciones como métodos
@@ -165,8 +169,11 @@ function agregarResultado (operacion) {
     //Guardo el resultado de la operación que se realizó en una variable local
     let resultadoOperacion = operacion
 
+    //Creo una variable que tome la fecha y hora exacta en la que se hizo la operación
+    let dt = DateTime.now()
+    
     //Voy guardando en el array del Storage un objeto nuevo con los resultados
-    resultadoStorage.push(new storeResultado(idResultado,datosBase.cantidadInicial,datosBase.unidadInicial,resultadoOperacion,datosBase.unidadDestino))
+    resultadoStorage.push(new storeResultado(idResultado,datosBase.cantidadInicial,datosBase.unidadInicial,resultadoOperacion,datosBase.unidadDestino,dt.toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)))
 
     //Mando, parseando previamente, el objeto al LocalStorage
     localStorage.setItem("resultados",JSON.stringify(resultadoStorage))
@@ -198,7 +205,7 @@ function agregarHTML(resultOperacion) {
         let arrayStorage = idResultado-2
 
         //Le agrego el texto al p
-        resultHist.innerText = `${resultadoStorage[arrayStorage].cantInicial} ${resultadoStorage[arrayStorage].unInicial} equivalen a ${resultadoStorage[arrayStorage].resultOp} ${resultadoStorage[arrayStorage].unDestino}`
+        resultHist.innerText = `${resultadoStorage[arrayStorage].fechayhora} - ${resultadoStorage[arrayStorage].cantInicial} ${resultadoStorage[arrayStorage].unInicial} equivalen a ${resultadoStorage[arrayStorage].resultOp} ${resultadoStorage[arrayStorage].unDestino}`
         
         //Imprimo el p en el div
         historial = historial.append(resultHist)
